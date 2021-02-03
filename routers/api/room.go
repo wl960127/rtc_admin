@@ -1,6 +1,7 @@
 package api
 
 import (
+	"go-admin/pkg/signaler"
 	"go-admin/service/p2p"
 	"net/http"
 
@@ -16,6 +17,13 @@ var wsUpgrader = websocket.Upgrader{
 	},
 }
 
+// WebSocketServer a
+type WebSocketServer struct {
+	handleWebSocket  func(ws *p2p.WebSocketConn, request *http.Request)
+	handleTurnServer func(writer http.ResponseWriter, request *http.Request)
+	// Websocket upgrader
+	upgrader websocket.Upgrader
+}
 
 // WsHandler wsq请求
 func WsHandler(c *gin.Context) {
@@ -24,12 +32,8 @@ func WsHandler(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	// wsConn := &wsConnection{
-	// 	wsSocket:  wsSocket,
-	// 	inChan:    make(chan *wsMessage, 1000),
-	// 	outChan:   make(chan *wsMessage, 1000),
-	// 	closeChan: make(chan byte),
-	// 	isClosed:  false,
-	// }
-	p2p.MsgHandler(wsSocket)
+	wsTransport := p2p.NewWebSocketConn(wsSocket)
+	signaler.NewSignaler().HandleNewWebSocket(wsTransport)
+	wsTransport.RendMessage()
+
 }

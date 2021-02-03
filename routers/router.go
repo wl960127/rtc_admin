@@ -16,6 +16,7 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
+// InitRouter 初始化路由
 func InitRouter() *gin.Engine {
 
 	r := gin.New()
@@ -28,6 +29,8 @@ func InitRouter() *gin.Engine {
 
 	r.POST("/auth", api.Auth)                                            // 获取登录token
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // API 注释
+
+	// signaler := signaler.NewSignaler()
 	r.GET("/ws", api.WsHandler)
 
 	apiV1 := r.Group("/api/v1")
